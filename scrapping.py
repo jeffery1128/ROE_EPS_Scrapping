@@ -8,6 +8,10 @@ time.sleep(2)
 html=driver.page_source
 soup=BeautifulSoup(html,'html.parser')
 tb = soup.find_all('table')
-print(len(tb))
+soup=BeautifulSoup(tb[17].text,'html.parser')
+print(type(tb[17]))
+#tb = soup.find_all('tbody')
+
+
 #table = driver.find_element_by_xpath('//*[@id="screener-content"]/table/tbody/tr[4]/td/table')
 #print(table.text)
