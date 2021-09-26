@@ -14,7 +14,7 @@ press_time = round(press_time/20) + (press_time%20 > 0)
 print(press_time)
 Cat = pd.DataFrame()
 
-for i in range(press_time):
+for i in range(press_time+1):
         print(i)
         try:
                 tb = driver.find_element_by_xpath('//*[@id="screener-content"]/table/tbody/tr[4]/td/table')
