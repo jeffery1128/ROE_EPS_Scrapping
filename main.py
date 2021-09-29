@@ -32,19 +32,21 @@ def scrap_all_data(ticker):
         for ticker in stock_list:
                 print(ticker)
                 print(cat.at[ticker,'Exchange'])
+                print(str(stock_list.index(ticker)+1),'/',len(stock_list))
                 url = "https://www.tradingview.com/symbols/"+cat.at[ticker,'Exchange']+"-"+ticker+"/financials-income-statement/earnings-per-share-diluted/"
                 driver.get(url)
+                time.sleep(0.5)
                 eps_dict['ticker'] = ticker
                 for i in range(1,8):
-                        eps = driver.find_element_by_xpath('//*[@id="js-category-content"]/div[2]/div[2]/div[2]/div/div/div[2]/div[3]/div['+str(i+2)+']/div[4]')
-                        eps_dict[now_year-i] = eps.text
+                        try:
+                                eps = driver.find_element_by_xpath('//*[@id="js-category-content"]/div/div[2]/div[2]/div/div/div[2]/div[3]/div['+str(i+2)+']/div[4]')
+                                eps_dict[now_year-i] = (eps.text).replace('\u202a','').replace('\u202c','')
+                        except:
+                                print('Page not found')
                 print(eps_dict)
-                time.sleep(0.3)
+                time.sleep(0.5)
 
         
-
-
-
 scrap_all_data('JPM')
 
 
