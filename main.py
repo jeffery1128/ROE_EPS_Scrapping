@@ -4,20 +4,14 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import time
 import datetime
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 cat = pd.read_csv('./stock_list.csv')
 cat = cat.set_index('Ticker')
 driver = webdriver.Chrome()
 #get current year
 now_year = datetime.datetime.now().year
-eps_dict = {}
-eps_dict['ticker'] = ""
-for i in range(1,8):
-        eps_dict[now_year-i] = ""
-
-roe_dict = eps_dict
-
-print(eps_dict)
 
 def find_stock_cat(ticker):
         return cat.at[ticker,'Industry']
@@ -27,7 +21,10 @@ def find_same_cat(industry):
 
 def scrap_all_data(ticker):
         stock_list = find_same_cat(find_stock_cat(ticker)).tolist()
-        df = pd.DataFrame()
+        result = {}
+        eps_dict = {}
+        for i in range(1,8):
+                eps_dict[now_year-i] = ""
         print(stock_list)
         for ticker in stock_list:
                 print(ticker)
@@ -35,8 +32,8 @@ def scrap_all_data(ticker):
                 print(str(stock_list.index(ticker)+1),'/',len(stock_list))
                 url = "https://www.tradingview.com/symbols/"+cat.at[ticker,'Exchange']+"-"+ticker+"/financials-income-statement/earnings-per-share-diluted/"
                 driver.get(url)
-                time.sleep(0.5)
-                eps_dict['ticker'] = ticker
+                time.sleep(0.8)
+                #eps_dict['ticker'] = ticker
                 for i in range(1,8):
                         try:
                                 eps = driver.find_element_by_xpath('//*[@id="js-category-content"]/div/div[2]/div[2]/div/div/div[2]/div[3]/div['+str(i+2)+']/div[4]')
@@ -44,10 +41,19 @@ def scrap_all_data(ticker):
                         except:
                                 print('Page not found')
                 print(eps_dict)
-                time.sleep(0.5)
+                result[ticker] = eps_dict
+                eps_dict={}
+                time.sleep(0.1)
+        return result
 
         
-scrap_all_data('JPM')
+result = scrap_all_data('AAL')
+
+df= pd.DataFrame.from_dict(result)
+df = df.T
+print(df)
+sns.barplot(data = df , x=[2020,2019,2018,2017,2016,2015,2014],y="Ticker" , hue = "ticker")
+plt.show()
 
 
 
